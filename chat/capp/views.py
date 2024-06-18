@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Message, MessageRecipient
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, auth 
+from django.contrib import messages
+
 
 @login_required(login_url='/register/')
 def home(request):
@@ -41,10 +43,18 @@ def register(request):
         email = request.POST["email"]
         password1= request.POST["password1"]
         password2 = request.POST["password2"]
-
-        user = User.objects.create_user(username=username, password=password1, email=email, first_name=first_name, last_name= last_name)
-        user.save();
-    
+        if password1 == password2: 
+            if User.objects.filter(username=username).exists():
+                messages.info(request, "Username Already exists")
+            elif User.objects.filter(email=email).exists():
+               messages.info(request, "Email Already exists")
+            else:
+                user = User.objects.create_user(username=username, password=password1, email=email, first_name=first_name, last_name= last_name)
+                user.save();
+                
+        else:
+            messages.info(request, "PAssword didnt match ")
+        return redirect('home')
 
 
     else:
