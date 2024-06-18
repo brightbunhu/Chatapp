@@ -1,0 +1,13 @@
+{%  include "navbar.html" %}
+{% block content %}
+<form action"register" method="Post">
+    {% csrf_token %}
+ <input type="text"  name="first_name" placeholder="first_name"><br>
+ <input type="text"  name="last_name" placeholder="last_name"><br>
+ <input type="text"  name="username" placeholder="username"><br>
+ <input type="text"  name="email" placeholder="email"><br>
+ <input type="text"  name="password1" placeholder="password1"><br>
+ <input type="text"  name="password2" placeholder="password2"><br>
+ <input type="submit">
+</form>
+{% endblock  %}
