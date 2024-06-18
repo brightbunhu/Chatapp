@@ -1,0 +1,14 @@
+{%  include "navbar.html" %}
+{% block content %}
+<form action"login" method="Post">
+    {% csrf_token %}
+ 
+ <input type="text"  name="username" placeholder="username"><br>
+ <input type="text"  name="password" placeholder="password"><br>
+ 
+ <input type="submit">
+</form>
+{% for message in  messages%}
+ <h1 color="red">Error: {{message}}</h1>
+{% endfor %}
+{% endblock  %}
