@@ -1,13 +1,14 @@
 {%  include "navbar.html" %}
 
+
 {%  block title %}<title>Home</title>{% endblock %}
 {% block content %}
-{% for message in messages %}
-<tr>
-    <td>{{ message.message.sender }}</td>
-    <td>{{ message.message.content }}</td>
-</tr>
-<hr>
-{% endfor %}
-
+<table>
+    {% for message in messages %}
+    <tr>
+        <td>{{ message.message.sender.username }}</td>
+        <td><a href="{% url 'inbox' pk=user.pk %}"> {{ message.message.content }} </a> </td> 
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}

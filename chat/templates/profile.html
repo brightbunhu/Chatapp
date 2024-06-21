@@ -1,0 +1,11 @@
+{% extends 'navbar.html' %}
+
+
+<title>{% block title %}Profile{% endblock %}</title>
+
+{% block content %}
+  <h1>{{ user.username }}'s Profile</h1>
+  <p>Email: {{ user.email }}</p>
+  <p>Joined: {{ user.date_joined }}</p>
+  <!-- Add more profile information as needed -->
+{% endblock %}
