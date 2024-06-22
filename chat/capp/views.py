@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from.forms import SendMessageForm
 
@@ -51,9 +52,36 @@ def mark_as_read(request, pk):
     return redirect('inbox', pk=request.user.pk)
 
 
+def search(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    results = User.objects.filter(username__icontains=q)
+
+    context = {"results": results}
+    return render(request, "search.html", context)
 
 
 
+from django.shortcuts import redirect
+from django.urls import reverse
+
+@login_required(login_url='/register/')
+def conversation(request, pk):
+    user = User.objects.get(pk=pk)
+    messages = MessageRecipient.objects.filter(
+        Q(recipient=request.user, message__sender=user) | 
+        Q(recipient=user, message__sender=request.user)
+    ).select_related('message').order_by('message__created_at')
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            message = Message.objects.create(sender=request.user, content=content)
+            MessageRecipient.objects.create(message=message, recipient=user)
+            return redirect(reverse('conversation', args=[user.pk]))
+    context = {
+        'messages': messages,
+        'user': user
+    }
+    return render(request, 'conversation.html', context)
 
 
 

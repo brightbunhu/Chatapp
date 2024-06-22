@@ -1,88 +1,24 @@
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inbox</title>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #333; background-image: linear-gradient(to right, #660033, #003366);">
-        <a class="navbar-brand" href="{% url 'admin:index' %}" style="color: #fff;">{{ title }}</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+{%  include "base.html" %}
+      {% block title %}Conversation with {{ user.username }}{% endblock %}
       
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto" style="flex-direction: row;">
-            <li class="nav-item active">
-              <a class="nav-link" href="/kall/" style="color: #fff;">Call <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/profile/" style="color: #fff;">Profile</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/block/" style="color: #fff;">Block</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="{% url 'home' pk=user.pk %}" style="color: #fff; font-weight: bold; margin-right: 20px;">Home</a>
-            </li>
-            <li class="nav-item">
-            {% if user.is_authenticated %}
-            <a class="nav-link" href="{% url 'profile' pk=user.pk %}" style="color: #fff; margin-right: 20px;">{{ user.username }}</a>
-            {% endif %}
-          </li>
-          </ul>
-        </div>
-      </nav>
-      <hr>
-    
-
-
-<ul>
-    {% for message_recipient in messages %}
-        <li>
-            <strong>From: {{ message_recipient.message.sender.username }}</strong>
-            <p>{{ message_recipient.message.content }}</p>
-            {% if message_recipient.message.sender.pk %}
-                <a href="{% url 'send_message' message_recipient.message.sender.pk %}">Reply</a>
-            {% endif %}
-        </li>
-    {% empty %}
-        <li>No unread messages</li>
-    {% endfor %}
-</ul>
-
-<!-- Sent messages -->
-<h1>Sent messages</h1>
-
-<ul>
-    {% for message in sent_messages %}
-        <li>
-            {% for recipient in message.recipients.all %}
-                <strong>To: {{ recipient.username }}</strong>
-            {% endfor %}
-            <p>{{ message.content }}</p>
-        </li>
-    {% empty %}
-        <li>No sent messages</li>
-    {% endfor %}
-</ul>
-
-<!-- Form to send a new message -->
-<h2>Send a message</h2>
-<form method="post">
-    {% csrf_token %}
-    <label for="recipient">To:</label>
-    <select id="recipient" name="recipient">
-        {% for user in users %}
-            <option value="{{ user.pk }}" {% if user.pk == default_recipient %}selected{% endif %}>{{ user.username }}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="content">Message:</label>
-    <textarea id="content" name="content"></textarea>
-    <br>
-    <input type="submit" value="Send">
-</form>
+      {% block content %}
+          <h1>Conversation with {{ user.username }}</h1>
+          <table>
+              {% for message in messages %}
+                  <tr>
+                      {% if message.message.sender == request.user %}
+                          <td style="text-align: right; color: #666;">You:</td>
+                          <td style="text-align: right;">{{ message.message.content }}</td>
+                      {% else %}
+                          <td>{{ message.message.sender.username }}:</td>
+                          <td>{{ message.message.content }}</td>
+                      {% endif %}
+                  </tr>
+              {% endfor %}
+          </table>
+          <form action="" method="post">
+              {% csrf_token %}
+              <textarea name="content" id="content" cols="30" rows="10"></textarea>
+              <button type="submit">Send</button>
+          </form>
+      {% endblock %}
